@@ -1,31 +1,13 @@
 {
-    "name": "omnipay/authorizenet",
+    "name": "omnipay/merchante-solutions",
     "type": "library",
     "description": "Authorize.Net gateway for the Omnipay payment processing library",
-    "keywords": [
-        "authorize net",
-        "authorize",
-        "authorize.net",
-        "gateway",
-        "merchant",
-        "omnipay",
-        "pay",
-        "payment"
-    ],
+    "keywords": [],
     "homepage": "https://github.com/omnipay/authorizenet",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Adrian Macneil",
-            "email": "adrian@adrianmacneil.com"
-        },
-        {
-            "name": "Omnipay Contributors",
-            "homepage": "https://github.com/omnipay/authorizenet/contributors"
-        }
-    ],
+    "authors": [],
     "autoload": {
-        "psr-4": { "Omnipay\\AuthorizeNet\\" : "src/" }
+        "psr-4": { "Omnipay\\MES\\" : "src/" }
     },
     "require": {
         "omnipay/common": "~2.0"
