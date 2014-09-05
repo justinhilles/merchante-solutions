@@ -1,4 +1,4 @@
-# Omnipay: Authorize.Net
+# Omnipay: Merchant E-Solutions
 
 **Authorize.Net driver for the Omnipay PHP payment processing library**
 

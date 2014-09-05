@@ -1,21 +1,23 @@
 <?php
 
-namespace Omnipay\MES\Message;
+namespace Omnipay\MES\Trident;
 
-class TpgTransaction
+
+
+class Transaction
 {
-    var $Post          =   true;
-    var $ApiHost       =   "https://cert.merchante-solutions.com/mes-api/tridentApi";
-    var $ProxyHost     =   "";
-    var $ProfileId;
-    var $ProfileKey;
-    var $TranType      =   "A";
-    var $ApiResponse;
-    var $ErrorMessage;
-    var $ResponseRaw;
-    var $ResponseFields;
-    var $RequestFields;
-    var $RequestFieldNames = array( "avs_data", "cardholder_street_address", "cardholder_zip", "cvv2", "transaction_amount", "card_number", "card_exp_date", "transaction_id", "card_present", "reference_number",
+    protected $Post          =   true;
+    protected $ApiHost       =   "https://cert.merchante-solutions.com/mes-api/tridentApi";
+    protected $ProxyHost     =   "";
+    protected $ProfileId;
+    protected $ProfileKey;
+    protected $TranType      =   "A";
+    protected $ApiResponse;
+    protected $ErrorMessage;
+    protected $ResponseRaw;
+    protected $ResponseFields;
+    protected $RequestFields;
+    protected $RequestFieldNames = array( "avs_data", "cardholder_street_address", "cardholder_zip", "cvv2", "transaction_amount", "card_number", "card_exp_date", "transaction_id", "card_present", "reference_number",
         "merchant_name", "merchant_city", "merchant_state", "merchant_zip", "merchant_category_code", "merchant_phone",
         "invoice_number", "tax_amount", "ship_to_zip", "moto_ecommerce_ind", "industry_code", "auth_code", "card_id", "country_code",
         "fx_amount", "fx_rate_id", "currency_code", "rctl_product_level", "echo_customfield",
@@ -23,7 +25,7 @@ class TpgTransaction
         "bml_request", "promo_code", "order_num", "order_desc", "amount", "ship_amount", "ip_address", "bill_first_name", "bill_middle_name", "bill_last_name", "bill_addr1", "bill_addr2", "bill_city", "bill_state", "bill_zip", "bill_phone1", "bill_phone2", "bill_email", "ship_first_name", "ship_middle_name", "ship_last_name", "ship_addr1", "ship_addr2", "ship_city", "ship_state", "ship_zip", "ship_phone1", "ship_phone2", "ship_email" );
     var $url;
 
-    function TpgTransaction( $profileId = '', $profileKey = '' )
+    function __construct( $profileId = '', $profileKey = '' )
     {
         $this->setProfile($profileId,$profileKey);
     }
@@ -32,7 +34,7 @@ class TpgTransaction
     {
         if ( $this->isValid() )
         {
-            $url .= "profile_id=" . $this->ProfileId;
+            $url = "profile_id=" . $this->ProfileId;
             $url .= "&profile_key=" . $this->ProfileKey;
 
             $url .= "&transaction_type=" . $this->TranType;
@@ -187,157 +189,3 @@ class TpgTransaction
         $this->RequestFields['merchant_phone'] = $phone;
     }
 }
-
-class TpgPreAuth extends TpgTransaction
-{
-    function TpgPreAuth( $profileId = '', $profileKey = '' )
-    {
-        $this->TpgTransaction( $profileId, $profileKey );
-        $this->TranType = "P"; // pre-auth
-    }
-
-    function setStoredData( $cardId, $amount )
-    {
-        $this->RequestFields['card_id'] = $cardId;
-        $this->RequestFields['transaction_amount'] = $amount;
-    }
-
-    function setFXData( $amt, $rid, $curr)
-    {
-        $this->RequestFields['fx_amount'] = $amt;
-        $this->RequestFields['fx_rate_id'] = $rid;
-        $this->RequestFields['currency_code'] = $curr;
-    }
-
-    function setEcommInd( $ind )
-    {
-        $this->RequestFields['moto_ecommerce_ind'] = $ind;
-    }
-}
-
-class TpgSale extends TpgTransaction
-{
-    function TpgSale( $profileId, $profileKey )
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->TranType = "D";
-    }
-
-    function setStoredData( $cardId, $amount )
-    {
-        $this->RequestFields['card_id'] = $cardId;
-        $this->RequestFields['transaction_amount'] = $amount;
-    }
-
-    function setFXData( $amt, $rid, $curr)
-    {
-        $this->RequestFields['fx_amount'] = $amt;
-        $this->RequestFields['fx_rate_id'] = $rid;
-        $this->RequestFields['currency_code'] = $curr;
-    }
-
-    function setEcommInd( $ind )
-    {
-        $this->RequestFields['moto_ecommerce_ind'] = $ind;
-    }
-}
-
-class TpgCredit extends TpgTransaction
-{
-    function TpgCredit( $profileId, $profileKey )
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->TranType = "C";
-    }
-
-    function setStoredData( $cardId, $amount )
-    {
-        $this->RequestFields['card_id'] = $cardId;
-        $this->RequestFields['transaction_amount'] = $amount;
-    }
-}
-
-class TpgSettle extends TpgTransaction
-{
-    function TpgSettle( $profileId, $profileKey, $tranId, $settleAmount = 0 )
-    {
-        $this->TpgTransaction($profileId,$profileKey);
-        $this->RequestFields['transaction_id'] = $tranId;
-        $this->RequestFields['transaction_amount'] = $settleAmount;
-        $this->TranType = "S";
-    }
-
-    function setSettlementAmount( $settleAmount )
-    {
-        $this->RequestFields['transaction_amount'] = $settleAmount;
-    }
-}
-
-class TpgRefund extends TpgTransaction
-{
-    function TpgRefund( $profileId, $profileKey, $tranId )
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->RequestFields['transaction_id'] = $tranId;
-        $this->TranType = "U";
-    }
-
-    function setStoredData( $cardId, $amount )
-    {
-        $this->RequestFields['card_id'] = $cardId;
-        $this->RequestFields['transaction_amount'] = $amount;
-    }
-}
-
-class TpgVoid extends TpgTransaction
-{
-    function TpgVoid( $profileId, $profileKey, $tranId )
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->RequestFields['transaction_id'] = $tranId;
-        $this->TranType = "V";
-    }
-
-    function setStoredData( $cardId, $amount )
-    {
-        $this->RequestFields['card_id'] = $cardId;
-        $this->RequestFields['transaction_amount'] = $amount;
-    }
-}
-
-class TpgOffline extends TpgTransaction
-{
-    function TpgOffline( $profileId, $profileKey, $authCode )
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->RequestFields['auth_code'] = $authCode;
-        $this->TranType = "O";
-    }
-
-    function setStoredData( $cardId, $amount )
-    {
-        $this->RequestFields['card_id'] = $cardId;
-        $this->RequestFields['transaction_amount'] = $amount;
-    }
-}
-
-class TpgStoreData extends TpgTransaction
-{
-    function TpgStoreData( $profileId, $profileKey )
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->TranType = "T";
-    }
-}
-
-class TpgRemoveData extends TpgTransaction
-{
-    function TpgRemoveData( $profileId, $profileKey, $cardId)
-    {
-        $this->TpgTransaction($profileId, $profileKey);
-        $this->RequestFields['card_id'] = $cardId;
-        $this->TranType = "X";
-    }
-}
-
-?>

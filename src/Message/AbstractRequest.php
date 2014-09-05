@@ -2,7 +2,6 @@
 
 namespace Omnipay\MES\Message;
 
-
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
     protected $host = "https://api.merchante-solutions.com/mes-api/tridentApi";
