@@ -11,6 +11,10 @@ class SaleRequest extends AbstractRequest
         return array();
     }
 
+    /**
+     * @param array $data
+     * @return \Omnipay\Common\Message\ResponseInterface|Response
+     */
     public function sendData($data)
     {
         $trans = new Sale($this->getProfileId(), $this->getProfileKey());

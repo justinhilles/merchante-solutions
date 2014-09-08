@@ -3,9 +3,12 @@
 namespace Omnipay\MES;
 
 use Omnipay\Common\AbstractGateway;
+use Omnipay\MES\Message\CreateCardRequest;
+use Omnipay\MES\Message\SaleRequest;
+use Omnipay\MES\Message\VerifyCardRequest;
 
 /**
- * Authorize.Net AIM Class
+ * Merchant E-Solutions
  */
 class Gateway extends AbstractGateway
 {
@@ -42,16 +45,31 @@ class Gateway extends AbstractGateway
         return $this->setParameter('profileKey', $value);
     }
 
+    /**
+     * Create a purchase request
+     * @param array $parameters
+     * @return SaleRequest
+     */
     public function purchase(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\MES\Message\SaleRequest', $parameters);
     }
 
+    /**
+     * Create a Create Card request
+     * @param array $parameters
+     * @return CreateCardRequest
+     */
     public function createCard(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\MES\Message\CreateCardRequest', $parameters);
     }
 
+    /**
+     * Create a Verify Card request
+     * @param array $parameters
+     * @return VerifyCardRequest
+     */
     public function verifyCard(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\MES\Message\VerifyCardRequest', $parameters);

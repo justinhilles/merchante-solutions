@@ -3,45 +3,47 @@
 namespace Omnipay\MES\Trident;
 
 
-
 class Transaction
 {
-    protected $Post          =   true;
-    protected $ApiHost       =   "https://cert.merchante-solutions.com/mes-api/tridentApi";
-    protected $ProxyHost     =   "";
+    protected $Post = true;
+    protected $ApiHost = "https://cert.merchante-solutions.com/mes-api/tridentApi";
+    protected $ProxyHost = "";
     protected $ProfileId;
     protected $ProfileKey;
-    protected $TranType      =   "A";
+    protected $TranType = "A";
     protected $ApiResponse;
     protected $ErrorMessage;
     protected $ResponseRaw;
     protected $ResponseFields;
     protected $RequestFields;
-    protected $RequestFieldNames = array( "avs_data", "cardholder_street_address", "cardholder_zip", "cvv2", "transaction_amount", "card_number", "card_exp_date", "transaction_id", "card_present", "reference_number",
-        "merchant_name", "merchant_city", "merchant_state", "merchant_zip", "merchant_category_code", "merchant_phone",
-        "invoice_number", "tax_amount", "ship_to_zip", "moto_ecommerce_ind", "industry_code", "auth_code", "card_id", "country_code",
-        "fx_amount", "fx_rate_id", "currency_code", "rctl_product_level", "echo_customfield",
-        "3d_payload", "3d_transaction_id", "client_reference_number",
-        "bml_request", "promo_code", "order_num", "order_desc", "amount", "ship_amount", "ip_address", "bill_first_name", "bill_middle_name", "bill_last_name", "bill_addr1", "bill_addr2", "bill_city", "bill_state", "bill_zip", "bill_phone1", "bill_phone2", "bill_email", "ship_first_name", "ship_middle_name", "ship_last_name", "ship_addr1", "ship_addr2", "ship_city", "ship_state", "ship_zip", "ship_phone1", "ship_phone2", "ship_email" );
     protected $url;
+    protected $RequestFieldNames = array(
+        "avs_data", "cardholder_street_address", "cardholder_zip", "cvv2", "transaction_amount", "card_number",
+        "card_exp_date", "transaction_id", "card_present", "reference_number", "merchant_name", "merchant_city",
+        "merchant_state", "merchant_zip", "merchant_category_code", "merchant_phone", "invoice_number", "tax_amount",
+        "ship_to_zip", "moto_ecommerce_ind", "industry_code", "auth_code", "card_id", "country_code", "fx_amount",
+        "fx_rate_id", "currency_code", "rctl_product_level", "echo_customfield", "3d_payload", "3d_transaction_id",
+        "client_reference_number", "bml_request", "promo_code", "order_num", "order_desc", "amount", "ship_amount",
+        "ip_address", "bill_first_name", "bill_middle_name", "bill_last_name", "bill_addr1", "bill_addr2",
+        "bill_city", "bill_state", "bill_zip", "bill_phone1", "bill_phone2", "bill_email", "ship_first_name",
+        "ship_middle_name", "ship_last_name", "ship_addr1", "ship_addr2", "ship_city", "ship_state", "ship_zip",
+        "ship_phone1", "ship_phone2", "ship_email"
+    );
 
-    function __construct( $profileId = '', $profileKey = '' )
+    public function __construct($profileId = '', $profileKey = '')
     {
-        $this->setProfile($profileId,$profileKey);
+        $this->setProfile($profileId, $profileKey);
     }
 
-    function execute()
+    public function execute()
     {
-        if ( $this->isValid() )
-        {
+        if ($this->isValid()) {
             $url = "profile_id=" . $this->ProfileId;
             $url .= "&profile_key=" . $this->ProfileKey;
 
             $url .= "&transaction_type=" . $this->TranType;
-            foreach( $this->RequestFieldNames as $fname )
-            {
-                if ( isset( $this->RequestFields[$fname] ) )
-                {
+            foreach ($this->RequestFieldNames as $fname) {
+                if (isset($this->RequestFields[$fname])) {
                     $url .= "&" . $fname . "=" . $this->RequestFields[$fname];
                 }
             }
@@ -51,76 +53,73 @@ class Transaction
         }
     }
 
-    function getResponseField($fieldName)
+    public function getResponseField($fieldName)
     {
         $retVal = '';
-        if ( isset( $this->ResponseFields[$fieldName] ) )
-        {
+        if (isset($this->ResponseFields[$fieldName])) {
             $retVal = $this->ResponseFields[$fieldName];
         }
-        return( $retVal );
+        return ($retVal);
     }
 
-    function isApproved()
+    public function isApproved()
     {
         $errorCode = $this->getResponseField('error_code');
         $retVal = FALSE;
-        if ( $errorCode == '000' )
-        {
+        if ($errorCode == '000') {
             $retVal = TRUE;
+        } else {
+            if ($errorCode == '085' && $this->TranType == 'A') {
+                $retVal = TRUE;
+            }
         }
-        else if ( $errorCode == '085' && $this->TranType == 'A' )
-        {
-            $retVal = TRUE;
-        }
-        return( $retVal );
+        return ($retVal);
     }
 
-    function isBlank( $value )
+    public function isBlank($value)
     {
-        return( $value == "" );
+        return ($value == "");
     }
 
-    function isValid()
+    public function isValid()
     {
-        $retVal = TRUE; // assume true
         $this->ErrorMessage = "";
-        if ( $this->isBlank($this->ProfileId) || $this->isBlank($this->ProfileKey) )
-        {
+        if ($this->isBlank($this->ProfileId) || $this->isBlank($this->ProfileKey)) {
             $this->ErrorMessage = "Missing profile data";
+        } else {
+            if (isset($this->RequestFields['transaction_amount']) && !is_numeric(
+                    $this->RequestFields['transaction_amount']
+                )
+            ) {
+                $this->ErrorMessage = "Amount must be a number";
+            }
         }
-        else if ( isset( $this->RequestFields['transaction_amount'] ) && !is_numeric($this->RequestFields['transaction_amount']) )
-        {
-            $this->ErrorMessage = "Amount must be a number";
-        }
-        return( $this->isBlank($this->ErrorMessage) );
+        return ($this->isBlank($this->ErrorMessage));
     }
 
-    function parseResponse( $response )
+    public function parseResponse($response)
     {
         $this->ResponseRaw = $response;
-        $responseFields = explode("&",$response);
+        $responseFields = explode("&", $response);
 
-        foreach($responseFields as $field)
-        {
-            $nameValue = explode("=",$field);
+        foreach ($responseFields as $field) {
+            $nameValue = explode("=", $field);
             $this->ResponseFields[$nameValue[0]] = $nameValue[1];
         }
     }
 
-    function processRequest()
+    public function processRequest()
     {
         $ch = curl_init();
 
-        if($this->Post) //Use POST
+        if ($this->Post) //Use POST
         {
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->url);
             curl_setopt($ch, CURLOPT_URL, $this->ApiHost);
-        }
-        else //Use GET(cURL default)
+        } else //Use GET(cURL default)
         {
-            curl_setopt($ch,CURLOPT_URL, $url = $this->ApiHost . "?" . $this->url);
+            curl_setopt($ch, CURLOPT_URL, $url = $this->ApiHost . "?" . $this->url);
         }
 
         curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE);
@@ -128,58 +127,57 @@ class Transaction
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_HEADER, 0);
 
-        if ( !$this->isBlank($this->ProxyHost) )
-        {
-            curl_setopt ($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-            curl_setopt ($ch, CURLOPT_PROXY, $this->ProxyHost);
+        if (!$this->isBlank($this->ProxyHost)) {
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+            curl_setopt($ch, CURLOPT_PROXY, $this->ProxyHost);
         }
 
-        curl_setopt ($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
-        $this->parseResponse( curl_exec($ch) );
+        $this->parseResponse(curl_exec($ch));
     }
 
-    function setAvsRequest( $cardholderStreetAddr, $cardholderZip )
+    public function setAvsRequest($cardholderStreetAddr, $cardholderZip)
     {
         $this->setRequestField("cardholder_street_address", $cardholderStreetAddr);
         $this->setRequestField("cardholder_zip", $cardholderZip);
     }
 
-    function setHost( $host )
+    public function setHost($host)
     {
         $this->ApiHost = $host;
     }
 
-    function setProfile( $profileId, $profileKey )
+    public function setProfile($profileId, $profileKey)
     {
         $this->ProfileId = $profileId;
         $this->ProfileKey = $profileKey;
     }
 
-    function setProxyHost( $proxyHost )
+    public function setProxyHost($proxyHost)
     {
         $this->ProxyHost = $proxyHost;
     }
 
-    function setRequestField( $fieldName, $fieldValue )
+    public function setRequestField($fieldName, $fieldValue)
     {
         $this->RequestFields[$fieldName] = urlencode($fieldValue);
     }
 
-    function setTransactionData( $cardNumber, $expDate, $tranAmount = 0.0 )
+    public function setTransactionData($cardNumber, $expDate, $tranAmount = 0.0)
     {
         $this->RequestFields['card_number'] = $cardNumber;
         $this->RequestFields['card_exp_date'] = $expDate;
         $this->RequestFields['transaction_amount'] = $tranAmount;
     }
 
-    function setPost( $bool )
+    public function setPost($bool)
     {
         $this->Post = $bool;
     }
 
-    function setDynamicData( $name, $city, $state, $zip, $mcc, $phone )
+    public function setDynamicData($name, $city, $state, $zip, $mcc, $phone)
     {
         $this->RequestFields['merchant_name'] = $name;
         $this->RequestFields['merchant_city'] = $city;
