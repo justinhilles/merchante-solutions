@@ -1,7 +1,7 @@
 {
     "name": "justinhilles/omnipay-merchante-solutions",
     "type": "library",
-    "description": "Authorize.Net gateway for the Omnipay payment processing library",
+    "description": "Merchant E-Solutions gateway for the Omnipay payment processing library",
     "keywords": [],
     "homepage": "https://github.com/justinhilles/merchante-solutions",
     "license": "MIT",
