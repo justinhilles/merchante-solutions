@@ -42,7 +42,7 @@ class Gateway extends AbstractGateway
         return $this->setParameter('profileKey', $value);
     }
 
-    public function sale(array $parameters = array())
+    public function purchase(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\MES\Message\SaleRequest', $parameters);
     }
