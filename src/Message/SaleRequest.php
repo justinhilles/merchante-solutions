@@ -21,7 +21,7 @@ class SaleRequest extends AbstractRequest
         $trans->setAvsRequest($this->getCard()->getAddress1(), $this->getCard()->getPostcode());
         $trans->setStoredData($this->getCardReference(), $this->getAmount());
         $trans->setRequestField('card_exp_date', $this->getCard()->getExpiryDate('Ym'));
-        $trans->setRequestField('invoice_number', $this->parameters->get('invoice_number'));
+        $trans->setRequestField('invoice_number', $this->getTransactionReference());
         $trans->setHost($this->host);
         $trans->execute();
 
