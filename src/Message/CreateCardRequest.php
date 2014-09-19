@@ -16,7 +16,7 @@ class CreateCardRequest extends AbstractRequest {
         $trans = new StoreData($this->getProfileId(), $this->getProfileKey());
         $trans->setRequestField('card_number', $this->getCard()->getNumber());
         $trans->setRequestField('card_exp_date', $this->getCard()->getExpiryDate('ym'));
-        $trans->setHost($this->host);
+        $trans->setHost($this->getEndpoint());
         $trans->execute();
 
         return $this->response = new Response($this, $trans);

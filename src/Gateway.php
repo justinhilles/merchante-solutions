@@ -45,6 +45,11 @@ class Gateway extends AbstractGateway
         return $this->setParameter('profileKey', $value);
     }
 
+    public function setEndpoint($endpoint)
+    {
+        return $this->setParameter('endpoint', $endpoint);
+    }
+
     /**
      * Create a purchase request
      * @param array $parameters

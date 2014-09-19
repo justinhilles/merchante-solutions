@@ -22,7 +22,7 @@ class SaleRequest extends AbstractRequest
         $trans->setStoredData($this->getCardReference(), $this->getAmount());
         $trans->setRequestField('card_exp_date', $this->getCard()->getExpiryDate('Ym'));
         $trans->setRequestField('invoice_number', $this->getTransactionReference());
-        $trans->setHost($this->host);
+        $trans->setHost($this->getEndpoint());
         $trans->execute();
 
         return $this->response = new Response($this, $trans);
