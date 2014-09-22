@@ -2,7 +2,7 @@
 
 namespace Omnipay\MES\Message;
 
-use TpgSale;
+use Omnipay\MES\Trident\Sale;
 
 class SaleRequest extends AbstractRequest
 {
@@ -11,16 +11,20 @@ class SaleRequest extends AbstractRequest
         return array();
     }
 
+    /**
+     * @param array $data
+     * @return \Omnipay\Common\Message\ResponseInterface|Response
+     */
     public function sendData($data)
     {
-        $trans = new TpgSale($this->getProfileId(), $this->getProfileKey());
+        $trans = new Sale($this->getProfileId(), $this->getProfileKey());
         $trans->setAvsRequest($this->getCard()->getAddress1(), $this->getCard()->getPostcode());
-        $trans->setStoredData($this->getCardId(), $this->getAmountInteger());
-        $trans->setRequestField('card_exp_date',$this->getCard()->getExpiryDate('Ym'));
-        $trans->setRequestField('invoice_number',$this->getInvoiceNumber());
-        $trans->setHost($this->getHost());
+        $trans->setStoredData($this->getCardReference(), $this->getAmount());
+        $trans->setRequestField('card_exp_date', $this->getCard()->getExpiryDate('Ym'));
+        $trans->setRequestField('invoice_number', $this->getTransactionReference());
+        $trans->setHost($this->getEndpoint());
         $trans->execute();
 
         return $this->response = new Response($this, $trans);
     }
-} 
+}

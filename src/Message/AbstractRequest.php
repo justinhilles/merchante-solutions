@@ -2,10 +2,8 @@
 
 namespace Omnipay\MES\Message;
 
-
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    protected $host = "https://api.merchante-solutions.com/mes-api/tridentApi";
 
     public function getProfileId()
     {
@@ -26,4 +24,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     {
         return $this->setParameter('profileKey', $value);
     }
-} 
+
+    public function getEndpoint()
+    {
+        return $this->getParameter('endpoint');
+    }
+
+    public function setEndpoint($endpoint)
+    {
+        return $this->setParameter('endpoint', $endpoint);
+    }
+}

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jhilles
- * Date: 8/5/14
- * Time: 4:47 PM
- */
 
 namespace Omnipay\MES\Message;
 
@@ -16,4 +10,21 @@ class Response extends AbstractResponse
     {
        return (bool) $this->data->isApproved();
     }
-} 
+
+    public function getTransactionReference()
+    {
+        return $this->data->getResponseField('transaction_id');
+    }
+
+    public function getMessage()
+    {
+        return $this->data->getResponseField('auth_response_text');
+    }
+
+    public function getCode()
+    {
+        return $this->data->getResponseField('error_code');
+    }
+
+
+}
