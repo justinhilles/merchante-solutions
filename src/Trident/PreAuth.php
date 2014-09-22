@@ -28,4 +28,3 @@ class PreAuth extends Transaction
         $this->RequestFields['moto_ecommerce_ind'] = $ind;
     }
 }
- 

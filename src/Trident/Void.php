@@ -18,4 +18,3 @@ class Void extends Transaction
         $this->RequestFields['transaction_amount'] = $amount;
     }
 }
- 

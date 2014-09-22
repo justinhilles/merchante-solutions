@@ -18,4 +18,3 @@ class Settle extends Transaction
         $this->RequestFields['transaction_amount'] = $settleAmount;
     }
 }
- 

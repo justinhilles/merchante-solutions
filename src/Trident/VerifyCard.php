@@ -13,4 +13,3 @@ class VerifyCard extends Transaction
     }
 
 }
- 

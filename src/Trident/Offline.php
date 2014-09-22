@@ -18,4 +18,3 @@ class Offline extends Transaction
         $this->RequestFields['transaction_amount'] = $amount;
     }
 }
- 
