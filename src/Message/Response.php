@@ -16,5 +16,15 @@ class Response extends AbstractResponse
         return $this->data->getResponseField('transaction_id');
     }
 
+    public function getMessage()
+    {
+        return $this->data->getResponseField('auth_response_text');
+    }
+
+    public function getCode()
+    {
+        return $this->data->getResponseField('error_code');
+    }
+
 
 }
