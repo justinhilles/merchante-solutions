@@ -10,4 +10,11 @@ class Response extends AbstractResponse
     {
        return (bool) $this->data->isApproved();
     }
+
+    public function getTransactionReference()
+    {
+        return $this->data->getResponseField('transaction_id');
+    }
+
+
 }
